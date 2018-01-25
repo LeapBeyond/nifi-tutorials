@@ -31,11 +31,15 @@ Once you have seen this, you can connect to <http://localhost:8080/nifi> to acce
 
 
 ## The User Interface
-Overview
+The NiFi user interface has three main areas. The _Canvas_ is where you build the workflows, while the _Navigate_ panel on the left of the screen allows an overview of the canvas and the ability to quickly move around in it. The _Canvas_ is arbitrarily large, and it is common for there to be more components in a workflow than comfortably fit on the screen.
+
+The _Operation Panel_ is mainly used for starting and stopping the workflow, but also provides short cuts for other operations. For now we will only use the _Start_ and _Stop_ buttons.
+
+Across the top is a blue/gray ribbon with 8 different types of things that can be dragged onto the Canvas. The left most one is the _Processor_ object. Selecting this with the mouse and dragging it to the _Canvas_ will pop up a dialog where you can specify what type of _Processor_ you want to add to your workflow.
+
+Just below this ribbon is an information bar that will display rough counts of how the workflow is progressing at any time. The date/time toward the right shows when the display was last refreshed.
 
 ![Overview of NiFi UI](./images/overview.png)
-
-(stuff in here about what you can see)
 
 ## Introduction to FlowFiles
 One of the [key concepts in NiFi](https://nifi.apache.org/docs.html) that you need to understand is the _FlowFile_. The official documentation says:
