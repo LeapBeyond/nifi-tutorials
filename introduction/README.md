@@ -52,6 +52,8 @@ All NiFi workflows entail creating FlowFiles and then manipulating those FlowFil
 
 Another key concept is that of a _Processor_. Workflows are built by joining processors together. Each type of processor (and there are hundreds), can either consume FlowFiles and pass them along, generate new FlowFiles, or take FlowFiles and generate several new ones from them.
 
+![Exercise 1](./images/example_1.png)
+
 - Drag a _Processor_ onto the canvas, then use the _Filter_ to find the `GenerateFlowFile` processor, highlight it and select _Add_.
 
 - Right-click on the new _Processor_ and choose _View Usage_. This should show the documentation for the processor. All processors, and many configurable items, have on line documentation which can help with using them. In this case, this processor generates new FlowFiles which optionally contain dummy data.
@@ -69,11 +71,6 @@ Another key concept is that of a _Processor_. Workflows are built by joining pro
 - Right-click on the `GenerateFlowFile` processor again, and chose the _Scheduling_ tab. Set the run schedule to 5 seconds. Some processors (particularly those that receive FlowFiles) only 'wake up' when they have work to do. A processor that generates FlowFiles, like this one, will loop as quickly as the computer will allow unless we tell it otherwise! _Apply_ the change, and you should observe that there are no more warnings visible.
 
 - Click somewhere on the canvas so that no processors are selected, then press _Start_ on the _Operate_ control set on the left of the window. The red squares should now change to green, indicating that the processors are running. Individual processors can be stopped and started as well - experiment to see what happens. You may need to click on the canvas and select _Refresh_ to see effects - by default the information on a running workflow only updates every few seconds (minutes in some cases).
-
-- You should be able to see something like this now:
-
-![Exercise 1](./images/example_1.png)
-
 
 - Stop the flow by making sure no processors are selected and pressing _Stop_ on the _Operate_ control set, then look at what was appearing in the log file. You should see entries that resemble:
 
