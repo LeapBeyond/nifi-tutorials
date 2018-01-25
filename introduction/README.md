@@ -56,15 +56,21 @@ Another key concept is that of a _Processor_. Workflows are built by joining pro
 
 - Drag a _Processor_ onto the canvas, then use the _Filter_ to find the `GenerateFlowFile` processor, highlight it and select _Add_.
 
+![Exercise 1 Add Processor](./images/filter.png)
+
 - Right-click on the new _Processor_ and choose _View Usage_. This should show the documentation for the processor. All processors, and many configurable items, have on line documentation which can help with using them. In this case, this processor generates new FlowFiles which optionally contain dummy data.
 
 - Observe that the _Processor_ has a yellow warning symbol on it - if you hover the mouse over it, you will get a report of why there's a problem. In this case, the processor is not connected to anything: there is nowhere for the newly generated FlowFiles to go.
+
+![Exercise 1 warning](./images/warning.png)
 
 - Drag a new _Processor_ onto the canvas, and add a `LogAttribute` processor.
 
 - Click on the `GenerateFlowFile` processor to the `LogAttribute` processor to connect them, and select _Add_ on the dialog that pops up. You should see that the `GenerateFlowFile` is no longer showing a warning - it's marked with a red square instead now - but the `LogAttribute` processor still has a problem.
 
 - Right-click on the `LogAttribute` processor, and choose _Configure_, then the _Settings_ tab. We need to terminate the stream of FlowFiles, ending the flow at this final processor in the stream, so select to "automatically terminate" the `success` relationship. You will see later that some processors have multiple output connections ("relationships"), which allows routing of different FlowFiles in different directions. Select _Apply_ to make the change.
+
+![Exercise 1 configuration](./images/configure.png)
 
 - Right-click on the `LogAttribute` processor again, choose _Configure_, then the _Properties_ tab. Set "Attributes To Log" to `filename` (careful, this is case sensitive), then select _Apply_.
 
