@@ -58,16 +58,16 @@ Another key concept is that of a _Processor_. Workflows are built by joining pro
 
 - Right-click on the `LogAttribute` processor again, choose _Configure_, then the _Properties_ tab. Set "Attributes To Log" to `filename` (careful, this is case sensitive), then select _Apply_.
 
-- Right-click on the `GenerateFlowFile` processor again, and chose the _Scheduling_ tab. Set the run schedule to 5 seconds. Some processors (particularly those that receive FlowFiles) only 'wake up' when they have work to do. A processor that generates flow files, like this one, will loop as quickly as the computer will allow unless we tell it otherwise! _Apply_ the change, and you should observe that there are no more warnings visible.
+- Right-click on the `GenerateFlowFile` processor again, and chose the _Scheduling_ tab. Set the run schedule to 5 seconds. Some processors (particularly those that receive FlowFiles) only 'wake up' when they have work to do. A processor that generates FlowFiles, like this one, will loop as quickly as the computer will allow unless we tell it otherwise! _Apply_ the change, and you should observe that there are no more warnings visible.
 
 - Click somewhere on the canvas so that no processors are selected, then press _Start_ on the _Operate_ control set on the left of the window. The red squares should now change to green, indicating that the processors are running. Individual processors can be stopped and started as well - experiment to see what happens. You may need to click on the canvas and select _Refresh_ to see effects - by default the information on a running workflow only updates every few seconds (minutes in some cases).
 
-- Stop the flow, and look at what was appearing in the log file. You should see entries that resemble:
+- Stop the flow by making sure no processors are selected and pressing _Stop_ on the _Operate_ control set, then look at what was appearing in the log file. You should see entries that resemble:
 
 ```
 --------------------------------------------------
 2018-01-23 14:54:00,453 INFO [Timer-Driven Process Thread-1] o.a.n.processors.standard.LogAttribute LogAttribute[id=237d29cd-0161-1000-bb2a-34170cc4d3ab]
- logging for flow file StandardFlowFileRecord[
+ logging for FlowFile StandardFlowFileRecord[
  uuid=9ecb1c13-ec4b-42e4-844a-0e32ce7046a8, claim=,
  offset=0, name=23601570659777, size=0]
 --------------------------------------------------
@@ -86,7 +86,7 @@ Key: 'filename'
 
 - Note that the specified attribute `filename` is shown under "FlowFile Attribute Map Content", and other standard attributes are shown above. The `LogAttribute` processor is a very useful debugging tool, but you will discover others in time. The `filename` of a FlowFile is internally generated, and does not necessarily have anything to do with a "file" that is being processed: it is purely an identifier for the FlowFile. It can be updated if you need, but don't worry too much about the name.
 
-- Right click on the `LogAttribute` processor again, and select _View data provenance_. You will see a list of recent FlowFiles that have entered or left the processor. Selecting the small "information" symbol at the start of each line will pop up a dialog that lets you examine the details, attributes and contents of the flow file. Explore this to see what you can find!
+- Right click on the `LogAttribute` processor again, and select _View data provenance_. You will see a list of recent FlowFiles that have entered or left the processor. Selecting the small "information" symbol at the start of each line will pop up a dialog that lets you examine the details, attributes and contents of the FlowFile. Explore this to see what you can find!
 
 - Click on the canvas, then drag to select both processors, then use the backspace or delete key to remove them. The canvas should be empty before going on.
 
@@ -100,11 +100,11 @@ The workflow template is along side this document, and could be imported, howeve
 
 - Right click on the `GetFile` processor to configure it, and choose the _Properties_ tab. Set **Input Directory** to `/tmp`, set **File Filter** to `urls.txt`, and set **Polling Interval** to `2 sec`. Finally, also set **Recurse Subdirectories** to `false`. Finish by selecting _Apply_ to save the changes. This configures the processor to look every 2 seconds for a file `/tmp/urls.txt`, and if it exists to create a new FlowFile with the contents. This processor will also (try to) delete the file after it has read it, unless configured otherwise.
 
-- Drag a `SplitText` processor onto the canvas, and right click to configure it. On the _Properties_ tab set **Line Split Count** to 1 and select _Apply_ to save the changes. This processor will break the incoming FlowFile into multiple flow files with 1 text line in each.
+- Drag a `SplitText` processor onto the canvas, and right click to configure it. On the _Properties_ tab set **Line Split Count** to 1 and select _Apply_ to save the changes. This processor will break the incoming FlowFile into multiple FlowFiles with 1 text line in each.
 
 - Drag from the `GetFile` to the `SplitText` to connect them. By default the name of the connection is `success`, which is the name of the output Relationship of the `GetFile` processor. This can be updated if desired, but mostly there's little benefit.
 
-- Drag an `ExtractText` processor onto the canvas, then right-click to configure its _Properties_. This time we won't update any of the existing attributes, but instead add a new attribute. On the upper right of the _Properties_ tab is a plus (+) button which adds a new property. Sect this and enter `document_url`. Press _Ok_ to accept that name, and then add `^.*$` as the value of the property. This processor is used to examine the contents of the incoming FlowFile, and then create new FlowFile attributes for any data that matches a particular regular expression. We have just defined a regular expression that matches the whole line of text, and said that this line of text will become a new attribute called `document_url`. More or less... in fact the attribute will be called `document_url.0`, `document_url.1`, `document_url.2` etc, for each piece of data that matched the regular expression. Since our regular expression matches a whole line, and the incoming FlowFile will contain a single line, we will wind up with just `document_url.0` set to one of the lines from the `/tmp/urls.txt` file.
+- Drag an `ExtractText` processor onto the canvas, then right-click to configure its _Properties_. This time we won't update any of the existing attributes, but instead add a new attribute. On the upper right of the _Properties_ tab is a plus (+) button which adds a new property. Select this and enter `document_url`. Press _Ok_ to accept that name, and then add `^.*$` as the value of the property. This processor is used to examine the contents of the incoming FlowFile, and then create new FlowFile attributes for any data that matches a particular regular expression. We have just defined a regular expression that matches the whole line of text, and said that this line of text will become a new attribute called `document_url`. More or less... in fact the attribute will be called `document_url.0`, `document_url.1`, `document_url.2` etc, for each piece of data that matched the regular expression. Since our regular expression matches a whole line, and the incoming FlowFile will contain a single line, we will wind up with just `document_url.0` set to one of the lines from the `/tmp/urls.txt` file.
 
 - Connect the `SplitText` processor to the `ExtractText` processor - this time a dialog will pop up asking which Relationship you want to make the connection for. The `SplitText` processor is an example of one which can send different information out of different connections. There are three: `failure`, `original` and `splits`. The `splits` connection will have the new FlowFiles created by splitting apart the incoming FlowFile, so choose that one and select _Add_ to save the change.
 
@@ -118,7 +118,7 @@ The workflow template is along side this document, and could be imported, howeve
 
 - Connect the `InvokeHttp` processor to the `UpdateAttribute` processor for the `Response` relationship, then configure the `InvokeHttp` processor to auto-terminate all other relationships. Notice that the *Settings* tab shows some information about each of the relationships. After you _Apply_ the change, the warning on the `InvokeHttp` processor should go away.
 
-- At this stage, the FlowFile that comes out of the `UpdateAttribute` processor should contain the data fetched from the URL, and a bunch of attributes giving information about the flow file, the content, and the results of the previous steps. Attributes accumulate as the FlowFile moves through the process, unless you use an `UpdateAttribute` processor to explicitly remove them.
+- At this stage, the FlowFile that comes out of the `UpdateAttribute` processor should contain the data fetched from the URL, and a bunch of attributes giving information about the FlowFile, the content, and the results of the previous steps. Attributes accumulate as the FlowFile moves through the process, unless you use an `UpdateAttribute` processor to explicitly remove them.
 
 - We're going to use a snippet of code - a script - to process the contents of the FlowFile now. Each of the text documents at Project Gutenberg is several hundred kilobytes long, so it would be useful to have a small program that just digs around in that text to extract what we want. Drag an `ExecuteScript` processor onto the canvas, and connect the `UpdateAttribute` processor to it.
 
@@ -157,7 +157,7 @@ session.transfer(flowFile, REL_SUCCESS)
 
 - This script does more than we need, but was one that we already had lying around. It's a small [Groovy](http://www.groovy-lang.org) program that reads the contents of the incoming FlowFile, and counts the occurence of every word in it. The contents of the FlowFile are then replaced with a list of every word and the number of occurences in the form `word: number`, e.g. `"satisfaction: 16"`. The `ExecuteScript` processor supports a few different programming languages, and the script can be stored as a file external to the processor as well. While it is fairly straight forward for a Java programmer to create new Processors for specific purposes, this is often overkill for simple operations that can be performed with a simple script. Another common pattern is to do what we did here: use a pre-existing script that is pretty close to what we need, rather than writing a new one.
 
-- The FlowFile content has been replaced with our word frequency list, which is great, but we don't want _every_ word, just the word "satisfaction.". It would be nice if there was a Processor that could filter this list for matching lines and send the results somewhere. Fortunately the `RouteText` processor can do just that! Drag a new `RouteText` processor onto the canvas, and connect the `success` relationship from the `ExecuteScript` processor to it. Don't forget to go back to the `ExecuteScript` processor to auto-terminate unneeded relationships.
+- The FlowFile content has been replaced with our word frequency list, which is great, but we don't want _every_ word, just the word "satisfaction". It would be nice if there was a Processor that could filter this list for matching lines and send the results somewhere. Fortunately the `RouteText` processor can do just that! Drag a new `RouteText` processor onto the canvas, and connect the `success` relationship from the `ExecuteScript` processor to it. Don't forget to go back to the `ExecuteScript` processor to auto-terminate unneeded relationships.
 
 - Configure the properties of the `RouteText` processor to set `Matching Strategy` to `Starts With`, then add a new property `satisfaction` with the value `satisfaction:`. This is instructing the processor to create a FlowFile containing every line starting with `satisfaction:` and send it down a new relationship called `satisfaction` (we could of called it `matched` as an alternative for clarity).
 
@@ -197,10 +197,10 @@ http://www.gutenberg.org/files/1400/1400-0.txt
 nifi@0dc61f8bd6cb:/opt/nifi/nifi-1.5.0$
  ```
 
- - list the contents of the share directory to verify our URLS file is there:
+ - list the contents of the share directory to verify our URLs file is there:
 
  ```
- nifi@0dc61f8bd6cb:/mnt$ ls -al /mnt
+ nifi@0dc61f8bd6cb:/opt/nifi/nifi-1.5.0$ ls -al /mnt
  total 8
  drwxr-xr-x  3 nifi nifi   96 Jan 24 12:14 .
  drwxr-xr-x 60 root root 4096 Jan 25 08:46 ..
@@ -218,7 +218,7 @@ nifi@0dc61f8bd6cb:/opt/nifi/nifi-1.5.0$
 - go back to the command line console in the Docker instance, and look at the contents of `/tmp/results`:
 
 ```
-nifi@0dc61f8bd6cb:~$ ls -al /tmp/results
+nifi@0dc61f8bd6cb:/opt/nifi/nifi-1.5.0$ ls -al /tmp/results
 total 32
 drwxr-xr-x 2 nifi nifi 4096 Jan 25 13:06 .
 drwxrwxrwt 7 root root 4096 Jan 25 13:06 ..
@@ -233,7 +233,7 @@ drwxrwxrwt 7 root root 4096 Jan 25 13:06 ..
 - there should be six files there. Let's look at them to see if we found any satisfaction!
 
 ```
-nifi@0dc61f8bd6cb:~$ cat /tmp/results/*
+nifi@0dc61f8bd6cb:/opt/nifi/nifi-1.5.0$ cat /tmp/results/*
 satisfaction: 35
 satisfaction: 15
 satisfaction: 1
