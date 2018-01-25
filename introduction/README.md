@@ -31,6 +31,10 @@ Once you have seen this, you can connect to <http://localhost:8080/nifi> to acce
 
 
 ## The User Interface
+Overview
+
+![Overview of NiFi UI](./images/overview.png)
+
 (stuff in here about what you can see)
 
 ## Introduction to FlowFiles
