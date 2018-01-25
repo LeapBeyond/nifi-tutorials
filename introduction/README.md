@@ -70,6 +70,11 @@ Another key concept is that of a _Processor_. Workflows are built by joining pro
 
 - Click somewhere on the canvas so that no processors are selected, then press _Start_ on the _Operate_ control set on the left of the window. The red squares should now change to green, indicating that the processors are running. Individual processors can be stopped and started as well - experiment to see what happens. You may need to click on the canvas and select _Refresh_ to see effects - by default the information on a running workflow only updates every few seconds (minutes in some cases).
 
+- You should be able to see something like this now:
+
+![Exercise 1](./images/example_1.png)
+
+
 - Stop the flow by making sure no processors are selected and pressing _Stop_ on the _Operate_ control set, then look at what was appearing in the log file. You should see entries that resemble:
 
 ```
@@ -96,6 +101,8 @@ Key: 'filename'
 
 - Right click on the `LogAttribute` processor again, and select _View data provenance_. You will see a list of recent FlowFiles that have entered or left the processor. Selecting the small "information" symbol at the start of each line will pop up a dialog that lets you examine the details, attributes and contents of the FlowFile. Explore this to see what you can find!
 
+![Exercise 1 Provenance](./images/provenance.png)
+
 - Click on the canvas, then drag to select both processors, then use the backspace or delete key to remove them. The canvas should be empty before going on.
 
 
@@ -103,6 +110,8 @@ Key: 'filename'
 The Rolling Stones famously could not find any [satisfaction](https://youtu.be/byn7ZUjz5DY), but we're going to dig through some books by Charles Dickens to see if it is there. In this workflow we are going to read a text file that has a list of URLs in it (references to books at [Project Gutenberg](http://www.gutenberg.org)), fetch each of the documents referred to, and then find the number of times the word "satisfaction" appears in each one. We'll write the results out to text files, but in a more realistic system we'd probably put them in a database or put them on a message queue for further action.
 
 The workflow template is along side this document, and could be imported, however you will learn more by building it up manually. There are quite a few processors that will be added and configured for this workflow, which should introduce some basic patterns of use that you will find again and again.
+
+![Exercise 2](./images/example_2.png)
 
 - Drag a `GetFile` processor onto the (empty) canvas. This will be the start of our workflow - this processor periodically looks in a directory for files matching some criterion, then creates a FlowFile containing the data in that file.
 
