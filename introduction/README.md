@@ -17,8 +17,18 @@ We will start by pulling and executing an official [Apache NiFi](https://hub.doc
 docker login
 docker pull apache/nifi:1.5.0
 docker run --name nifi -p 8080:8080 -d -v $(pwd):/mnt apache/nifi:1.5.0
+```
+windows users should run the following command: 
+```
+ docker run --name nifi -p 8080:8080 -d -v //$(pwd)://mnt apache/nifi:1.5.0
+```
+
+We can now pull up nifi logs with the following command: 
+```
 docker logs -f nifi
 ```
+
+
 
 This will start the image running, with the current directory shared with the `/mnt` directory inside the instance. The image is quite large, so be patient with the `docker pull`, and it takes a fair amount of time for NiFi to be available for work. When you seee a message like the following in the log, it's ready to work.
 
@@ -210,6 +220,11 @@ http://www.gutenberg.org/files/1400/1400-0.txt
 
  ```
  docker exec -it nifi /bin/bash
+ ```
+ windows users should run this command instead:
+ 
+ ```
+  winpty docker exec -it nifi //bin/bash
  ```
 
 - You should see the prompt change to show that you are now interacting with the command line inside the container:
