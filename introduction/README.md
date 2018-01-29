@@ -66,7 +66,7 @@ Another key concept is that of a _Processor_. Workflows are built by joining pro
 
 - Drag a new _Processor_ onto the canvas, and add a `LogAttribute` processor.
 
-- Click on the `GenerateFlowFile` processor, drag it to the `LogAttribute` processor to connect them and select _Add_ on the dialog that pops up. You should see that the `GenerateFlowFile` is no longer showing a warning - it's marked with a red square instead now - but the `LogAttribute` processor still has a problem.
+- Click on the `GenerateFlowFile` processor, drag it to the `LogAttribute` processor to connect them, and select _Add_ on the dialog that pops up. You should see that the `GenerateFlowFile` is no longer showing a warning - it's marked with a red square instead now - but the `LogAttribute` processor still has a problem.
 
 - Right-click on the `LogAttribute` processor, and choose _Configure_, then the _Settings_ tab. We need to terminate the stream of FlowFiles, ending the flow at this final processor in the stream, so select to "automatically terminate" the `success` relationship. You will see later that some processors have multiple output connections ("relationships"), which allows routing of different FlowFiles in different directions. Select _Apply_ to make the change.
 
