@@ -29,7 +29,12 @@ This will start the image running, with the current directory shared with the `/
 
 Once you have seen this, you can connect to <http://localhost:8080/nifi> to access the user interface in a browser. Most modern browsers are supported.
 
+### Running NiFi on Windows 7
 
+The simplest way to get up and running on Windows 7 is to download and install NiFi natively on the machine from <https://nifi.apache.org>. After installing and running (see <https://nifi.apache.org/docs.html>), then NiFi should be available at <http://localhost:8080/nifi>. Please be aware that the download is somewhat over 1Gb in size, and starting it up can be quite slow.
+
+An additional caveat - NiFi does not appear to run on Windows Internet Explorer, so you will need to access it using a modern browser like [Chrome](https://chrome.com).
+ 
 ## The User Interface
 The NiFi user interface has three main areas. The _Canvas_ is where you build the workflows, while the _Navigate_ panel on the left of the screen allows an overview of the canvas and the ability to quickly move around in it. The _Canvas_ is arbitrarily large, and it is common for there to be more components in a workflow than comfortably fit on the screen.
 
