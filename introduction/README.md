@@ -17,8 +17,18 @@ We will start by pulling and executing an official [Apache NiFi](https://hub.doc
 docker login
 docker pull apache/nifi:1.5.0
 docker run --name nifi -p 8080:8080 -d -v $(pwd):/mnt apache/nifi:1.5.0
+```
+windows users should run the following command: 
+```
+ docker run --name nifi -p 8080:8080 -d -v //$(pwd)://mnt apache/nifi:1.5.0
+```
+
+We can now pull up nifi logs with the following command: 
+```
 docker logs -f nifi
 ```
+
+
 
 This will start the image running, with the current directory shared with the `/mnt` directory inside the instance. The image is quite large, so be patient with the `docker pull`, and it takes a fair amount of time for NiFi to be available for work. When you seee a message like the following in the log, it's ready to work.
 
@@ -127,7 +137,7 @@ The workflow template is along side this document, and could be imported, howeve
 
 - Drag a `SplitText` processor onto the canvas, and right click to configure it. On the _Properties_ tab set **Line Split Count** to 1 and select _Apply_ to save the changes. This processor will break the incoming FlowFile into multiple FlowFiles with 1 text line in each.
 
-- Drag from the `GetFile` to the `SplitText` to connect them. By default the name of the connection is `success`, which is the name of the output Relationship of the `GetFile` processor. This can be updated if desired, but mostly there's little benefit.
+- Hover over `GetFile` and drag the arrow to the `SplitText` processor to connect them. By default the name of the connection is `success`, which is the name of the output Relationship of the `GetFile` processor. This can be updated if desired, but mostly there's little benefit.
 
 - Drag an `ExtractText` processor onto the canvas, then right-click to configure its _Properties_. This time we won't update any of the existing attributes, but instead add a new attribute. On the upper right of the _Properties_ tab is a plus (+) button which adds a new property. Select this and enter `document_url`. Press _Ok_ to accept that name, and then add `^.*$` as the value of the property. This processor is used to examine the contents of the incoming FlowFile, and then create new FlowFile attributes for any data that matches a particular regular expression. We have just defined a regular expression that matches the whole line of text, and said that this line of text will become a new attribute called `document_url`. More or less... in fact the attribute will be called `document_url.0`, `document_url.1`, `document_url.2` etc, for each piece of data that matched the regular expression. Since our regular expression matches a whole line, and the incoming FlowFile will contain a single line, we will wind up with just `document_url.0` set to one of the lines from the `/tmp/urls.txt` file.
 
@@ -139,11 +149,11 @@ The workflow template is along side this document, and could be imported, howeve
 
 - Connect the `ExtractText` processor to the `InvokeHTTP` processor, choosing the `matched` relationship, then configure the `ExtractText` processor to auto-terminate the `unmatched` relationship. This is another common pattern - making a connection, then going back to the source of the FlowFile to auto-terminate the unneeded relationships.
 
-- We now want to add a step which just updates the attributes of the FlowFile being processed. Fortunately there is a processor just for this, so drag an `UpdateAttribute` processor onto the canvas, and go to its *Properties*. The name of this processor is a bit misleading, because it can update, delete and add properties. In this case use the plus (+) button to add a new property `filename`, with a value `${document_url.0:substringAfterLast('/')}`. This is an example of a more complex use of the expression language, where we are taking the URL and chopping out all but the last part. For example <http://www.gutenberg.org/files/766/766-0.txt> gives us `766-0.txt`. If you remember the first exercise, you would recall that `filename` is an auto-generated value created by NiFi on all FlowFiles. We are overwriting it with a desired value that we will use later on.
+- We now want to add a step which just updates the attributes of the FlowFile being processed. Fortunately there is a processor just for this, so drag an `UpdateAttribute` processor onto the canvas, and select the *Properties* tab. The name of this processor is a bit misleading, because it can update, delete and add properties. In this case use the plus (+) button   to add a new property `filename`, with a value `${document_url.0:substringAfterLast('/')}`. This is an example of a more complex use   of the expression language, where we are taking the URL and chopping out all but the last part. For example <http://www.gutenberg.org/files/766/766-0.txt> gives us `766-0.txt`. If you remember the first exercise, you would recall that `filename` is an auto-generated value created by NiFi on all FlowFiles. We are overwriting it with a desired value that we will use later on.
 
 - Connect the `InvokeHttp` processor to the `UpdateAttribute` processor for the `Response` relationship, then configure the `InvokeHttp` processor to auto-terminate all other relationships. Notice that the *Settings* tab shows some information about each of the relationships. After you _Apply_ the change, the warning on the `InvokeHttp` processor should go away.
 
-- At this stage, the FlowFile that comes out of the `UpdateAttribute` processor should contain the data fetched from the URL, and a bunch of attributes giving information about the FlowFile, the content, and the results of the previous steps. Attributes accumulate as the FlowFile moves through the process, unless you use an `UpdateAttribute` processor to explicitly remove them.
+- At this stage, the FlowFile that comes out of the `UpdateAttribute` processor should contain the data fetched from the URL, and a bunch of attributes giving information about the FlowFile, the content, and the results of the previous steps. Attributes **accumulate** as the FlowFile moves through the process, unless you use an `UpdateAttribute` processor to explicitly remove them.
 
 - We're going to use a snippet of code - a script - to process the contents of the FlowFile now. Each of the text documents at Project Gutenberg is several hundred kilobytes long, so it would be useful to have a small program that just digs around in that text to extract what we want. Drag an `ExecuteScript` processor onto the canvas, and connect the `UpdateAttribute` processor to it.
 
@@ -184,13 +194,15 @@ session.transfer(flowFile, REL_SUCCESS)
 
 - The FlowFile content has been replaced with our word frequency list, which is great, but we don't want _every_ word, just the word "satisfaction". It would be nice if there was a Processor that could filter this list for matching lines and send the results somewhere. Fortunately the `RouteText` processor can do just that! Drag a new `RouteText` processor onto the canvas, and connect the `success` relationship from the `ExecuteScript` processor to it. Don't forget to go back to the `ExecuteScript` processor to auto-terminate unneeded relationships.
 
-- Configure the properties of the `RouteText` processor to set `Matching Strategy` to `Starts With`, then add a new property `satisfaction` with the value `satisfaction:`. This is instructing the processor to create a FlowFile containing every line starting with `satisfaction:` and send it down a new relationship called `satisfaction` (we could of called it `matched` as an alternative for clarity).
+- Configure the properties of the `RouteText` processor to set `Matching Strategy` to `Starts With`, then add a new property `satisfaction` with the value `satisfaction:`. This is instructing the processor to create a FlowFile containing every line starting with `satisfaction:` and send it down a new relationship called `satisfaction` (we could have called it `matched` as an alternative for clarity).
 
 - This processor has a pretty complex behaviour, and it's a good example of one where the documentation is not particularly informative. Right click on the processor and select _View Usage_ to explore the documentation.
 
-- The final thing we want to do is preserve the content of our FlowFiles which now contain the count of the word "satisfaction" for a specific document fetched from the URL. Drag a `PutFile` processor onto the canvas, and connect the `RouteText` processor to it. You will see that there is a relationship called `satisfaction`, so choose that one. Add the connection, then configure `RouteText` to auto-terminate the unneeded relationships.
+- The final thing we want to do is preserve the content of our FlowFiles which now contain the count of the word "satisfaction" for a specific document fetched from the URL. Drag a `PutFile` processor onto the canvas, and connect the `RouteText` processor to it. You will see that there is a relationship called `satisfaction`, choose that one. Add the connection, then configure `RouteText` to auto-terminate the unneeded relationships.
 
-- Configure the properties of the `PutFile` processor to set **Directory** to `/tmp/results` and **Conflict Resolution Strategy** to `replace`, then _Apply_ the change. Why do you think we're not specifying a file name? Remember that each FlowFile always has a `filename` property, and that we used the `UpdateAttribute` processor to set it to a value derived from the URL. This is the name of the file that the `PutFile` processor will try to write.
+- Configure the properties of the `PutFile` processor to set **Directory** to `/tmp/results` and **Conflict Resolution Strategy** to `replace`, then _Apply_ the change.
+ Why do you think we're not specifying a file name?
+ Remember that each FlowFile always has a `filename` property, and that we used the `UpdateAttribute` processor to set it to a value derived from the URL. This is the name of the file that the `PutFile` processor will try to write.
 
 - Because this is the last processor in the workflow, we need to auto-terminate all of it's relationships, so right-click to go into it's *Settings* tab and do that.
 
@@ -213,6 +225,11 @@ http://www.gutenberg.org/files/1400/1400-0.txt
 
  ```
  docker exec -it nifi /bin/bash
+ ```
+ windows users should run this command instead:
+ 
+ ```
+  winpty docker exec -it nifi //bin/bash
  ```
 
 - You should see the prompt change to show that you are now interacting with the command line inside the container:
